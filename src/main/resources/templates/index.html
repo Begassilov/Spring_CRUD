@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+	xmlns:sec="https://www.thymeleaf.org/thymeleaf-extras-springsecurity5">
+<head>
+<meta charset="ISO-8859-1">
+<title>Book Information</title>
+	<!-- Latest compiled and minified CSS -->
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+	<!-- Optional theme -->
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css" integrity="sha384-rHyoN1iRsVXV4nD0JutlnGaslCJuC7uwjduW9SVrLvRYooPp2bWYgmgJQIXwl/Sp" crossorigin="anonymous">
+</head>
+<body style="background-color: lightsteelblue">
+<!--header-->
+<nav class="navbar navbar-default" role="navigation">
+	<div class="container-fluid">
+		<div class="navbar-header">
+			<button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
+				<span class="sr-only">?????????</span>
+				<span class="icon-bar"></span>
+				<span class="icon-bar"></span>
+				<span class="icon-bar"></span>
+			</button>
+			<a class="navbar-brand" href="#">Book Shop</a>
+		</div>
+		<div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+			<ul class="nav navbar-nav">
+				<li class="active"><a href="https://readrate.com/rus/ratings/books-everyone-should-read">Read Rate</a></li>
+			</ul>
+			<form class="navbar-form navbar-left" role="search">
+					<div sec:authorize="hasAnyAuthority('USER', 'ADMIN')">
+						<a href="/search">Search Book</a>
+					</div>
+			</form>
+			<ul class="nav navbar-nav navbar-right">
+				<form th:action="@{/logout}" method="post">
+					<input type="submit" value="Logout" />
+				</form>
+			</ul>
+		</div>
+	</div>
+</nav>
+<!--end header-->
+	<div align="center">
+		<h1>Book List</h1>
+		
+		<div sec:authorize="isAuthenticated()">
+			Welcome <b><span sec:authentication="name">Username</span></b> &nbsp;
+			<i><span sec:authentication="principal.authorities">Roles</span></i>
+		</div>
+
+		<div sec:authorize="hasAnyAuthority('CREATOR', 'ADMIN')">
+		<a href="/new">Add Book</a>
+		</div>
+		<div sec:authorize="hasAnyAuthority('CREATOR', 'ADMIN')">
+			<a href="/user/save">Add User</a>
+		</div>
+
+
+		<table border="1" cellpadding="10">
+			<thead>
+				<tr>
+					<th>Book ID</th>
+					<th>Book title</th>
+					<th>Book author</th>
+					<th>Price</th>
+					<th sec:authorize="hasAnyAuthority('ADMIN', 'EDITOR')">Action</th>
+				</tr>
+			</thead>
+			<tbody>
+				<tr th:each="book : ${listBook}">
+					<td th:text="${book.id}">Book ID</td>
+					<td th:text="${book.book_title}">Book Title</td>
+					<td th:text="${book.book_author}">Book author</td>
+					<td th:text="${book.price}">Price</td>
+
+					<td sec:authorize="hasAnyAuthority('ADMIN', 'EDITOR')">
+						<div sec:authorize="hasAnyAuthority('ADMIN', 'EDITOR')">
+							<a th:href="@{'/edit/' + ${book.id}}">Edit</a>
+						</div>
+						<div sec:authorize="hasAnyAuthority('ADMIN')">
+							<a th:href="@{'/delete/' + ${book.id}}">Delete</a>
+						</div>
+					</td>
+				</tr>
+			</tbody>
+		</table>
+		<br>
+	</div>
+<div sec:authorize="hasAnyAuthority('ADMIN')" style="margin-left: 625px">
+	<a th:href="@{/user-list}">Display Users</a>
+	<table border="1" cellpadding="10">
+		<thead>
+		<tr>
+			<th>User ID</th>
+			<th>User name </th>
+			<th>Password</th>
+
+		</tr>
+		</thead>
+		<tbody>
+		<tr th:each="user : ${listUser}">
+			<td th:text="${user.id}">User ID</td>
+			<td th:text="${user.username}">User name</td>
+			<td th:text="${user.password}">Password</td>
+		</tr>
+		</tbody>
+	</table>
+</div>
+</body>
+</html>
